@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Compra Exitosa - LocoBrick</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --color-principal: #FF8C00;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: #28a745;
+        }
+
+        .resumen-caja {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid var(--color-principal);
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <i class="bi bi-check-circle-fill success-icon mb-3"></i>
+                <h1 class="fw-bold mb-4">¡Enhorabuena!</h1>
+                <p class="lead">Tu participación en <strong><span
+                            th:text="${transaccion.participacion.propiedad.name}"></span></strong> ha sido confirmada.
+                </p>
+
+                <div class="resumen-caja p-4 mt-4 text-start shadow-sm">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Resumen de la Operación</h5>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Importe de Inversión:</span>
+                        <span th:text="${inversion} + ' €'"></span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-muted">
+                        <span>Comisión de Apertura (2%):</span>
+                        <span th:text="${comision} + ' €'"></span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <span>Total Cargado:</span>
+                        <span th:text="${total} + ' €'"></span>
+                    </div>
+                </div>
+
+                <div class="mt-5 d-flex justify-content-center gap-3">
+                    <a th:href="@{/factura/pdf/{id}(id=${transaccion.transactionID})}" target="_blank"
+                        class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold">
+                        <i class="bi bi-file-earmark-pdf-fill text-danger"></i> Descargar Factura
+                    </a>
+                    <a href="/mis-inversiones" class="btn text-white rounded-pill px-4 py-2 fw-bold"
+                        style="background-color: var(--color-principal);">
+                        Ir a mi Cartera
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

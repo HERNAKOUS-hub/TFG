@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pasarela de Pago - LocoBrick</title>
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-blanco: #FFFFFF;
+            --color-negro: #212529;
+            --color-gris: #6c757d;
+            --color-locobrick: #FB6222;
+            --color-hover: #e0a800;
+            --fuente-titulos: 'Poppins', sans-serif;
+            --fuente-textos: 'Open Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-textos);
+            background-color: #F4F5F7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .contenedor {
+            background-color: var(--color-blanco);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-family: var(--fuente-titulos);
+            font-size: 24px;
+            color: var(--color-negro);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--color-gris);
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .grupo-input {
+            position: relative;
+            width: 100%;
+            text-align: left;
+        }
+
+        .input-flotante {
+            width: 100%;
+            padding: 15px 15px 5px 15px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            background-color: transparent;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: var(--fuente-textos);
+            color: var(--color-negro);
+            font-weight: 600;
+        }
+
+        .input-flotante:focus,
+        .input-flotante:not(:placeholder-shown) {
+            border-color: var(--color-locobrick);
+            box-shadow: 0 0 0 3px rgba(251, 98, 34, 0.1);
+        }
+
+        .label-flotante {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 15px;
+            color: var(--color-gris);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background-color: var(--color-blanco);
+            padding: 0 5px;
+        }
+
+        .input-flotante:focus~.label-flotante,
+        .input-flotante:not(:placeholder-shown)~.label-flotante {
+            top: 0;
+            font-size: 12px;
+            color: var(--color-locobrick);
+            font-weight: 600;
+        }
+
+        .fila-doble {
+            display: flex;
+            gap: 15px;
+        }
+
+        .fila-doble .grupo-input {
+            flex: 1;
+        }
+
+        .input-cantidad {
+            padding-right: 35px;
+            font-size: 22px;
+            font-family: var(--fuente-titulos);
+            color: var(--color-locobrick) !important;
+            text-align: right;
+        }
+
+        .simbolo-euro {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--color-locobrick);
+        }
+
+        .btn-enviar {
+            background-color: var(--color-locobrick);
+            color: var(--color-blanco);
+            font-family: var(--fuente-titulos);
+            font-weight: 600;
+            font-size: 16px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(251, 98, 34, 0.3);
+        }
+
+        .btn-enviar:hover {
+            background-color: var(--color-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(224, 168, 0, 0.4);
+        }
+
+        .separador {
+            margin: 25px 0;
+            border-top: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .enlaces {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .enlaces a {
+            color: var(--color-locobrick);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .enlaces a:hover {
+            color: var(--color-hover);
+        }
+
+        .iconos-tarjetas {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            opacity: 0.6;
+        }
+
+        .iconos-tarjetas img {
+            height: 25px;
+        }
+
+        .info-seguro {
+            font-size: 12px;
+            color: var(--color-gris);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor">
+        <div class="header">
+            <h1>Ingresar Fondos</h1>
+            <p>Añade capital a tu cartera de forma segura.</p>
+        </div>
+
+        <div class="info-seguro">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Conexión encriptada (SSL)
+        </div>
+
+        <form action="/wallet/operar" method="post" id="formDeposito">
+            <input type="hidden" name="tipo" value="depositar">
+
+            <input type="hidden" id="cantidadCentimos" name="cantidadCentimos" value="0">
+
+            <div class="grupo-input">
+                <input type="text" id="cantidad" class="input-flotante input-cantidad" placeholder=" " required
+                    oninput="formatFintech(this, 'cantidadCentimos')">
+                <label for="cantidad" class="label-flotante">Cantidad a depositar</label>
+                <span class="simbolo-euro">€</span>
+            </div>
+
+            <div class="grupo-input">
+                <input type="text" id="titular" name="titular" class="input-flotante" placeholder=" " required>
+                <label for="titular" class="label-flotante">Nombre del titular</label>
+            </div>
+
+            <div class="grupo-input">
+                <input type="text" id="numeroTarjeta" name="numeroTarjeta" class="input-flotante" placeholder=" "
+                    maxlength="19" required>
+                <label for="numeroTarjeta" class="label-flotante">Número de tarjeta</label>
+            </div>
+
+            <div class="fila-doble">
+                <div class="grupo-input">
+                    <input type="text" id="caducidad" name="caducidad" class="input-flotante" placeholder=" "
+                        maxlength="5" required>
+                    <label for="caducidad" class="label-flotante">MM/YY</label>
+                </div>
+                <div class="grupo-input">
+                    <input type="password" id="cvv" name="cvv" class="input-flotante" placeholder=" " maxlength="4"
+                        required>
+                    <label for="cvv" class="label-flotante">CVV</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-enviar">DEPOSITAR AHORA</button>
+
+            <div class="iconos-tarjetas">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png"
+                    alt="MasterCard">
+                <img src="https://www.visa.es/content/dam/VCOM/global/about-visa/images/visa-brandmark-blue-1960x622.png"
+                    alt="Visa">
+            </div>
+        </form>
+
+        <div class="separador"></div>
+        <div class="enlaces"><a href="/mis-inversiones">← Cancelar y volver</a></div>
+    </div>
+
+    <script>
+        // FORMATEADOR TIPO CAJERO
+        function formatFintech(visibleInput, hiddenId) {
+            let valStr = visibleInput.value.replace(/\D/g, '');
+            if (valStr === '') valStr = '0';
+            let valInt = parseInt(valStr, 10);
+
+            document.getElementById(hiddenId).value = valInt;
+            let formatted = (valInt / 100).toFixed(2).replace('.', ',');
+            visibleInput.value = formatted;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Regla de Tarjeta (Espacios)
+            document.getElementById('numeroTarjeta').addEventListener('input', function (e) {
+                let valor = e.target.value.replace(/\D/g, '');
+                let formateado = '';
+                for (let i = 0; i < valor.length; i++) {
+                    if (i > 0 && i % 4 === 0) formateado += ' ';
+                    formateado += valor[i];
+                }
+                e.target.value = formateado;
+            });
+
+            // Regla de Caducidad
+            const caducidadInput = document.getElementById('caducidad');
+            caducidadInput.addEventListener('input', function (e) {
+                let valor = e.target.value.replace(/\D/g, '');
+                if (valor.length > 2) valor = valor.substring(0, 2) + '/' + valor.substring(2, 4);
+                e.target.value = valor;
+            });
+
+            // Validar mínimo (Ej: 10€ = 1000 céntimos)
+            document.getElementById('formDeposito').addEventListener('submit', function (e) {
+                const centimos = parseInt(document.getElementById('cantidadCentimos').value, 10);
+                if (centimos < 1000) {
+                    e.preventDefault();
+                    alert('El depósito mínimo es de 10,00 €');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${propiedad.propertyID != null ? 'Editar Propiedad' : 'Nueva Propiedad'} + ' - LocoBrick'">
+        Formulario Propiedad</title>
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --color-principal: #FB6222;
+            --color-hover: #FFC107;
+            --color-fondo: #f8fafc;
+            --color-texto-oscuro: #111827;
+            --fuente-fintech: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-fintech);
+            background-color: var(--color-fondo);
+            color: var(--color-texto-oscuro);
+        }
+
+        /* NAVBAR ADMIN */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #f3f4f6;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #dc3545 !important;
+            letter-spacing: -0.5px;
+        }
+
+        .card-formulario {
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+
+        .btn-principal {
+            background-color: var(--color-principal);
+            color: white;
+            transition: all 0.3s ease;
+            border: none;
+            font-weight: 700;
+            padding: 12px;
+        }
+
+        .btn-principal:hover {
+            background-color: var(--color-hover);
+            color: var(--color-texto-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-cancelar {
+            padding: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top mb-5">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <i class="bi bi-shield-lock-fill"></i> LocoBrick ADMIN
+            </a>
+            <div class="d-flex gap-3">
+                <a href="/admin/propiedades" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">← Volver al
+                    Panel</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mb-5">
+        <div class="card-formulario">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold"
+                    th:text="${propiedad.propertyID != null ? 'Editar Propiedad' : 'Crear Nueva Propiedad'}">Formulario
+                </h2>
+                <p class="text-muted small">Rellena los datos para añadirla al catálogo público.</p>
+            </div>
+
+            <div th:if="${param.exito}" class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> Propiedad guardada correctamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <form
+                th:action="${propiedad.propertyID != null ? '/admin/propiedades/actualizar/' + propiedad.propertyID : '/admin/propiedades/guardar'}"
+                method="post">
+
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-bold small text-secondary text-uppercase">Nombre de la
+                        Propiedad</label>
+                    <input type="text" class="form-control bg-light" id="name" name="name" th:value="${propiedad.name}"
+                        placeholder="Ej: Ático en el centro" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="zoneID" class="form-label fw-bold small text-secondary text-uppercase">Zona /
+                            Ubicación</label>
+                        <select class="form-select bg-light" id="zoneID" name="zoneID" required>
+                            <option value="">-- Seleccionar --</option>
+                            <option th:each="zona : ${zonas}" th:value="${zona.zoneID}"
+                                th:selected="${propiedad.zona != null && propiedad.zona.zoneID == zona.zoneID}"
+                                th:text="${zona.city + ' - ' + zona.district}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="value" class="form-label fw-bold small text-secondary text-uppercase">Valor Inicial
+                            (€)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">€</span>
+                            <input type="number" class="form-control border-start-0 bg-light" id="value" name="value"
+                                th:value="${valorEuros}" step="10000.00" placeholder="Ej: 250000" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="rentaMensual" class="form-label fw-bold small text-success text-uppercase">Renta
+                            Mensual (€)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-success">€</span>
+                            <input type="number" class="form-control border-start-0 bg-light text-success fw-bold"
+                                id="rentaMensual" name="rentaMensual" th:value="${rentaEuros}" step="100.00"
+                                placeholder="Dejar vacío para auto (6.5%)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="status" class="form-label fw-bold small text-secondary text-uppercase">Estado de la
+                        Financiación</label>
+                    <select class="form-select bg-light fw-bold" id="status" name="status" required>
+                        <option value="Disponible" th:selected="${propiedad.status == 'Disponible'}"
+                            class="text-success">Disponible</option>
+                        <option value="Arrendada" th:selected="${propiedad.status == 'Arrendada'}" class="text-info">
+                            Arrendada</option>
+                        <option value="En gestión" th:selected="${propiedad.status == 'En gestión'}"
+                            class="text-warning">En gestión</option>
+                        <option value="Vendida" th:selected="${propiedad.status == 'Vendida'}" class="text-danger">
+                            Vendida</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="description" class="form-label fw-bold small text-secondary text-uppercase">Descripción
+                        detallada</label> 
+                    <textarea class="form-control bg-light" id="description" name="description" rows="4"
+                        placeholder="Describe los puntos fuertes para los inversores..." required
+                        th:text="${propiedad.description}"></textarea>
+                </div>
+
+                <div class="d-flex flex-column gap-2 mt-4">
+                    <button type="submit" class="btn btn-principal rounded-pill">
+                        <i class="bi bi-save-fill me-1"></i> <span
+                            th:text="${propiedad.propertyID != null ? 'Guardar Cambios' : 'Publicar Propiedad'}">Guardar</span>
+                    </button>
+                    <a href="/admin/propiedades" class="btn btn-light btn-cancelar border rounded-pill">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .chatbot-wrapper {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif
+        }
+
+        .chatbot-toggle-btn {
+            width: 60px;
+            height: 60px;
+            background-color: var(--color-principal, #FB6222);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(251, 98, 34, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            float: right
+        }
+
+        .chatbot-toggle-btn:hover {
+            background-color: var(--color-hover, #FFC107);
+            color: #111827;
+            transform: scale(1.05)
+        }
+
+        .chatbot-window {
+            width: 350px;
+            height: 450px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 1px solid #f1f5f9
+        }
+
+        .chatbot-header {
+            background-color: #111827;
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 10px
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4
+        }
+
+        .bot-bubble {
+            background-color: white;
+            color: #111827;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05)
+        }
+
+        .user-bubble {
+            background-color: var(--color-principal, #FB6222);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 2px 5px rgba(251, 98, 34, 0.2)
+        }
+
+        .chatbot-input-area {
+            padding: 10px 15px;
+            background-color: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px
+        }
+
+        .chatbot-input-area input {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 8px 15px;
+            outline: none;
+            font-size: 0.9rem
+        }
+
+        .chatbot-input-area input:focus {
+            border-color: var(--color-principal, #FB6222)
+        }
+
+        .chatbot-input-area button {
+            background-color: var(--color-principal, #FB6222);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            transition: 0.2s
+        }
+
+        .chatbot-input-area button:hover {
+            background-color: var(--color-hover, #FFC107);
+            color: #111827
+        }
+
+        .bot-action-btn {
+            display: inline-block;
+            margin-top: 8px;
+            background-color: #111827;
+            color: white !important;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s
+        }
+
+        .bot-action-btn:hover {
+            background-color: var(--color-hover, #FFC107);
+            color: #111827 !important
+        }
+    </style>
+    <div class="chatbot-wrapper">
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header"><span><i class="bi bi-robot me-2"></i> Asistente LocoBrick</span><i
+                    class="bi bi-x-lg" style="cursor:pointer" onclick="toggleChat()"></i></div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-bubble bot-bubble">¡Hola! 👋 Qué alegría verte por aquí. Soy el asistente virtual de
+                    LocoBrick. ¿En qué puedo ayudarte con tus inversiones hoy?</div>
+            </div>
+            <div class="chatbot-input-area"><input type="text" id="chatInput" placeholder="Escribe tu duda..."
+                    onkeypress="handleKeyPress(event)"><button onclick="sendMessage()"><i
+                        class="bi bi-send-fill"></i></button></div>
+        </div><button class="chatbot-toggle-btn" id="chatToggleBtn" onclick="toggleChat()"><i
+                class="bi bi-chat-dots-fill"></i></button>
+    </div>
+    <script>
+        const knowledgeBase = [{ keywords: ["como funciona", "que es esto", "explicacion", "de que va", "como invierto"], response: "LocoBrick te permite invertir en inmuebles de forma fraccionada. Nosotros seleccionamos y gestionamos las propiedades, y tú compras una pequeña parte. Así, recibes rentas mensuales proporcionales y ganas dinero con la revalorización del activo.", buttonText: "Ver cómo funciona", buttonLink: "/#como-funciona" }, { keywords: ["comprar", "invertir", "adquirir", "participar", "catalogo", "casas", "propiedades", "inmuebles"], response: "Para comprar participaciones, primero debes registrarte y depositar fondos. Luego, entra en nuestro catálogo, elige la propiedad que te guste y selecciona cuánto quieres invertir.", buttonText: "Ir al Catálogo", buttonLink: "/catalogo" }, { keywords: ["vender", "liquidar", "desinvertir", "recuperar", "venta"], response: "Puedes vender tus participaciones en cualquier momento desde tu panel de 'Mis Inversiones'. Solo tienes que hacer clic en el botón 'Vender' del activo correspondiente y el dinero volverá a tu saldo disponible al instante.", buttonText: "Ir a Mis Inversiones", buttonLink: "/mis-inversiones" }, { keywords: ["minimo", "cuanto dinero", "inversion minima", "cantidad minima", "desde cuanto"], response: "¡Democratizamos la inversión! En LocoBrick puedes empezar a crear tu cartera inmobiliaria aportando desde tan solo 100€ por proyecto.", buttonText: "Ver Proyectos", buttonLink: "/catalogo" }, { keywords: ["saldo", "depositar", "ingresar", "retirar", "sacar dinero", "transferencia", "fondos", "wallet"], response: "Para gestionar tu dinero (ingresar o retirar fondos a tu cuenta bancaria), ve a la sección de tu Cartera. Usa los botones de 'Depositar' o 'Retirar'. Las transferencias de retiro suelen tardar entre 1 y 2 días hábiles.", buttonText: "Gestionar Fondos", buttonLink: "/mis-inversiones" }, { keywords: ["rentas", "beneficios", "ganancias", "cuando cobro", "dividendos", "rentabilidad"], response: "Las rentas generadas por los alquileres de tus propiedades se reparten de forma mensual. Verás los ingresos sumados automáticamente al saldo disponible de tu Cartera.", buttonText: "Ver mi Cartera", buttonLink: "/mis-inversiones" }];
+        function toggleChat() { const chatWindow = document.getElementById('chatbotWindow'); const icon = document.querySelector('#chatToggleBtn i'); if (chatWindow.style.display === 'flex') { chatWindow.style.display = 'none'; icon.className = 'bi bi-chat-dots-fill'; } else { chatWindow.style.display = 'flex'; icon.className = 'bi bi-x-lg'; document.getElementById('chatInput').focus(); } }
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+        function sendMessage() { const inputField = document.getElementById('chatInput'); const userText = inputField.value.trim(); if (!userText) return; addMessage(userText, 'user'); inputField.value = ''; setTimeout(() => { const reply = findAnswer(userText); addMessage(reply.text, 'bot', reply.actionBtn); }, 500); }
+        function findAnswer(text) { const cleanText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); if (cleanText.match(/^(hola|buenas|que tal|saludos|hey|buenos dias|buenas tardes)/)) return { text: "¡Hola! 👋 Qué alegría verte por aquí. Soy el asistente virtual de LocoBrick. ¿En qué puedo ayudarte con tus inversiones hoy?", actionBtn: "" }; if (cleanText.match(/(adios|hasta luego|chao|nos vemos)/)) return { text: "¡Hasta pronto! 👋 Recuerda que el mercado inmobiliario nunca duerme. ¡Vuelve cuando quieras!", actionBtn: "" }; if (cleanText.match(/(quien eres|como te llamas|eres un robot|eres ia|que eres)/)) return { text: "Soy LocoBot 🤖, el asistente virtual de LocoBrick. Estoy aquí para guiarte por la plataforma, ayudarte a invertir y resolver tus dudas básicas. ¡No pido sueldo, solo que me uses!", actionBtn: "" }; if (cleanText.includes("animal con menos pelo") || cleanText.includes("animal que tiene menos pelo")) return { text: "Esa es fácil... ¡Aitor de la Cueva! 👨‍🦲😂", actionBtn: "" }; for (let item of knowledgeBase) { for (let keyword of item.keywords) { if (cleanText.includes(keyword)) return { text: item.response, actionBtn: item.buttonLink ? `<br><a href="${item.buttonLink}" class="bot-action-btn">${item.buttonText}</a>` : "" }; } } return { text: "Mmm, no estoy seguro de entender eso. 🤔<br>Soy un bot de navegación, así que se me da genial ayudarte con cosas como:<br>👉 <i>'Quiero comprar'</i><br>👉 <i>'Ver mi cartera'</i><br>👉 <i>'Depositar dinero'</i>", actionBtn: "" }; }
+        function addMessage(text, sender, extraHTML = "") { const chatBox = document.getElementById('chatbotMessages'); const bubble = document.createElement('div'); bubble.className = `chat-bubble ${sender}-bubble`; bubble.innerHTML = text + extraHTML; chatBox.appendChild(bubble); chatBox.scrollTop = chatBox.scrollHeight; }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

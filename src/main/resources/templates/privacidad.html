@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Política de Privacidad - LocoBrick</title>
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --color-principal: #FB6222;
+            --color-hover: #FFC107;
+            --color-fondo: #f8fafc;
+            --color-texto-oscuro: #111827;
+            --fuente-fintech: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-fintech);
+            background-color: var(--color-fondo);
+            color: var(--color-texto-oscuro);
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #f3f4f6;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--color-texto-oscuro) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .legal-header {
+            background: #111827;
+            color: white;
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+
+        .legal-header h1 {
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .legal-content {
+            max-width: 800px;
+            margin: -40px auto 50px;
+            background: white;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .legal-content h3 {
+            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            color: #111827;
+        }
+
+        .legal-content p,
+        .legal-content li {
+            color: #4b5563;
+            line-height: 1.8;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .legal-content ul {
+            padding-left: 20px;
+        }
+
+        .last-updated {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img th:src="@{/images/LocoBrick.png}" alt="Logo" style="height: 35px;"> LocoBrick
+            </a>
+            <div class="d-flex gap-3 align-items-center mt-3 mt-lg-0 ms-auto">
+                <a href="/" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">← Volver al Inicio</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="legal-header">
+        <div class="container">
+            <h1>Política de Privacidad</h1>
+            <p class="fs-5 text-white-50">Cómo protegemos y tratamos tus datos personales.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="legal-content">
+            <span class="last-updated">Última actualización: 15 de Marzo de 2026</span>
+
+            <p>En LocoBrick, el respeto y la protección de su privacidad son fundamentales para nuestro negocio. Esta
+                Política de Privacidad describe cómo recopilamos, utilizamos, almacenamos y protegemos su información
+                personal en cumplimiento con el Reglamento General de Protección de Datos (RGPD).</p>
+
+            <h3>1. Datos que recopilamos</h3>
+            <p>Para poder ofrecerle nuestros servicios financieros y cumplir con las normativas vigentes (Prevención de
+                Blanqueo de Capitales), recopilamos los siguientes datos:</p>
+            <ul>
+                <li><strong>Datos de contacto:</strong> Nombre, apellidos, correo electrónico y número de teléfono.</li>
+                <li><strong>Datos de identidad:</strong> DNI/NIE, fecha de nacimiento, nacionalidad.</li>
+                <li><strong>Datos financieros:</strong> Historial de transacciones dentro de la plataforma, saldos,
+                    participaciones y detalles bancarios anonimizados procesados a través de proveedores seguros (ej.
+                    Stripe).</li>
+            </ul>
+
+            <h3>2. Uso de la Información</h3>
+            <p>Utilizamos sus datos exclusivamente para los siguientes fines:</p>
+            <ul>
+                <li>Crear y gestionar su cuenta de inversor.</li>
+                <li>Procesar sus inversiones, depósitos, retiros y pago de dividendos.</li>
+                <li>Cumplir con las obligaciones legales de verificación de identidad (KYC) e informes fiscales.</li>
+                <li>Mejorar el rendimiento y la seguridad de la plataforma.</li>
+            </ul>
+
+            <h3>3. Compartición de Datos</h3>
+            <p>LocoBrick <strong>no vende, alquila ni comercializa</strong> sus datos personales a terceros. Solo
+                compartiremos información con proveedores de servicios esenciales (pasarelas de pago, entidades de
+                verificación de identidad) que actúan bajo estrictos contratos de confidencialidad y normativas
+                europeas.</p>
+
+            <h3>4. Derechos del Usuario</h3>
+            <p>Usted tiene derecho a solicitar el acceso, rectificación, portabilidad o eliminación de sus datos
+                personales. Para ejercer estos derechos, puede contactarnos en
+                <strong>privacidad@locobrick.com</strong>.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

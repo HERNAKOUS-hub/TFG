@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Cartera - LocoBrick</title>
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --color-principal: #FB6222;
+            --color-hover: #FFC107;
+            --color-fondo: #f8fafc;
+            --color-texto-oscuro: #111827;
+            --fuente-fintech: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-fintech);
+            background-color: var(--color-fondo);
+            color: var(--color-texto-oscuro);
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #f3f4f6;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--color-texto-oscuro) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--color-texto-oscuro) !important;
+            margin: 0 10px;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--color-hover) !important;
+        }
+
+        .dashboard-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            background: white;
+        }
+
+        .card-balance {
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%) !important;
+            color: white;
+            border-radius: 16px;
+        }
+
+        .btn-circle {
+            border-radius: 50px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-depositar {
+            background-color: white;
+            color: var(--color-texto-oscuro);
+            border: 2px solid white;
+        }
+
+        .btn-depositar:hover {
+            background-color: var(--color-hover);
+            color: var(--color-texto-oscuro);
+            border-color: var(--color-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        }
+
+        .btn-retirar {
+            background-color: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-retirar:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-vender {
+            transition: all 0.3s ease;
+        }
+
+        .btn-vender:hover {
+            background-color: #dc3545 !important;
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img th:src="@{/images/LocoBrick.png}" alt="Logo" style="height: 35px;">
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="/catalogo">Inmuebles</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-danger" href="/admin/propiedades"><i class="bi bi-shield-lock"></i>
+                            Admin</a>
+                    </li>
+                </ul>
+                <div class="d-flex gap-3 align-items-center mt-3 mt-lg-0">
+                    <span class="fw-bold d-none d-md-block me-2">Hola, <span
+                            th:text="${usuario.firstName}">Usuario</span></span>
+                    <a href="/logout" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold">Salir</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+
+        <div th:if="${param.compra}" class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
+            <i class="bi bi-check-circle-fill"></i> ¡Inversión realizada con éxito! Revisa tu cartera y tu saldo.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${param.venta}" class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
+            <i class="bi bi-check-circle-fill"></i> ¡Venta procesada con éxito! El dinero se ha sumado a tu saldo.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${param.error == 'saldo'}" class="alert alert-danger alert-dismissible fade show rounded-4"
+            role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> Error: No tienes saldo suficiente para esa operación.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${ultimaRenta != null}" id="alertaDividendos"
+            class="alert alert-success d-flex flex-column flex-md-row align-items-md-center shadow-sm rounded-4 mb-5 border-success border-2 pe-5"
+            style="background-color: #f0fdf4;">
+
+            <div class="mb-3 mb-md-0 me-auto">
+                <h5 class="fw-bold mb-1 text-success"><i class="bi bi-stars me-2"></i>¡Día de Cobro!</h5>
+                <p class="mb-0 text-dark">Has recibido tus dividendos mensuales agrupados:
+                    <strong class="fs-5 text-success"
+                        th:text="'+' + ${#numbers.formatDecimal(ultimaRenta.amount / 100.0, 1, 'POINT', 2, 'COMMA')} + ' €'"></strong>
+                    por tus activos inmobiliarios.
+                </p>
+            </div>
+
+            <a th:href="@{/factura/renta/pdf/{id}(id=${ultimaRenta.transactionID})}" target="_blank"
+                class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm me-md-3">
+                <i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i> Descargar Recibo
+            </a>
+
+            <button type="button" class="btn-close" id="btnCerrarDividendos" aria-label="Close"></button>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+            <h3 class="fw-bold mb-0" style="letter-spacing: -1px;">Resumen de tu Cartera</h3>
+            <a href="/cartera/informe" target="_blank"
+                class="btn btn-dark rounded-pill fw-bold px-4 shadow-sm border-0">
+                <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>Descargar Informe Global
+            </a>
+        </div>
+
+        <div class="row mb-5 g-4">
+            <div class="col-md-4">
+                <div class="card dashboard-card card-balance h-100 p-2 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <h6 class="text-white-50 text-uppercase fw-bold mb-3" style="letter-spacing: 1px;">Saldo
+                            Disponible</h6>
+                        <h2 class="display-6 fw-bold mb-4 text-white"
+                            th:text="${#numbers.formatDecimal(saldoEuros, 0, 'POINT', 2, 'COMMA') + ' €'}">0,00 €
+                        </h2>
+
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="/banco/depositar" class="btn-circle btn-depositar fw-bold shadow-sm">
+                                <i class="bi bi-plus-lg"></i> Depositar
+                            </a>
+                            <a href="/banco/retirar" class="btn-circle btn-retirar fw-bold">
+                                <i class="bi bi-dash-lg"></i> Retirar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card dashboard-card h-100 p-2 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <h6 class="text-muted text-uppercase fw-bold mb-3" style="letter-spacing: 1px;">Capital
+                            Invertido</h6>
+                        <h2 class="display-6 fw-bold mb-3" style="color: var(--color-principal);"
+                            th:text="${#numbers.formatDecimal(totalInvertido, 0, 'POINT', 2, 'COMMA') + ' €'}">0,00 €
+                        </h2>
+                        <span class="badge bg-light text-secondary rounded-pill align-self-center px-3 py-2 border"><i
+                                class="bi bi-buildings"></i> Activos en cartera</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card dashboard-card h-100 p-2 border-0 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <h6 class="text-muted text-uppercase fw-bold mb-3" style="letter-spacing: 1px;">Rendimiento Est.
+                        </h6>
+                        <h2 class="display-6 fw-bold text-success mb-3"
+                            th:text="${'+' + #numbers.formatDecimal(gananciaEstimada, 0, 'POINT', 2, 'COMMA') + ' €'}">
+                            +0,00 €</h2>
+                        <span
+                            class="badge bg-success bg-opacity-10 text-success rounded-pill align-self-center px-3 py-2"><i
+                                class="bi bi-graph-up-arrow"></i> +6.5% Media Anual</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <h4 class="fw-bold mb-3" style="letter-spacing: -0.5px;"><i
+                        class="bi bi-briefcase-fill me-2 text-muted"></i>Mis Activos Inmobiliarios</h4>
+                <div class="card dashboard-card overflow-hidden border-0 shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="bg-light text-secondary small text-uppercase" style="letter-spacing: 0.5px;">
+                                <tr>
+                                    <th class="ps-4 py-3 border-0">Propiedad</th>
+                                    <th class="border-0 text-center">Inversión Act.</th>
+                                    <th class="text-end pe-4 border-0">Vender Participación</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border-top-0">
+                                <tr th:each="inv : ${inversiones}">
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded p-2 me-3"
+                                                style="background-color: #fff7ed; color: var(--color-principal);">
+                                                <i class="bi bi-house-door-fill fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark" th:text="${inv.propiedad.name}">Nombre
+                                                    Propiedad</div>
+                                                <div class="small text-muted" th:text="${inv.propiedad.zona.city}">
+                                                    Ciudad</div>
+
+                                                <div class="small fw-bold mt-1" style="color: #10b981;"
+                                                    th:if="${inv.propiedad.rentaMensual != null}">
+                                                    <i class="bi bi-cash-coin"></i> Genera:
+                                                    <span
+                                                        th:text="${#numbers.formatDecimal((inv.propiedad.rentaMensual * (inv.investmentAmount * 1.0 / inv.propiedad.value)) / 100.0, 1, 'POINT', 2, 'COMMA')}"></span>
+                                                    € / mes
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <div class="fw-bold text-dark fs-6"
+                                            th:text="${#numbers.formatDecimal(inv.investmentAmount / 100.0, 0, 'POINT', 2, 'COMMA') + ' €'}">
+                                            0 €</div>
+                                        <span class="badge bg-light text-dark border px-2 mt-1"
+                                            th:text="${#numbers.formatDecimal(inv.percentage / 100.0, 0, 'POINT', 2, 'COMMA') + '% propiedad'}">0%</span>
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <form action="/inversiones/vender" method="post"
+                                            class="d-flex justify-content-end align-items-center gap-2 m-0">
+                                            <input type="hidden" name="idParticipacion"
+                                                th:value="${inv.participationID}">
+
+                                            <input type="hidden" name="cantidadVenderCentimos"
+                                                th:id="'hiddenCents-' + ${inv.participationID}"
+                                                th:value="${inv.investmentAmount}">
+
+                                            <div class="input-group input-group-sm" style="width: 140px;">
+                                                <input type="text" class="form-control fw-bold text-end"
+                                                    th:value="${#numbers.formatDecimal(inv.investmentAmount / 100.0, 1, 'NONE', 2, 'COMMA')}"
+                                                    th:oninput="'formatFintech(this, \\'hiddenCents-' + ${inv.participationID} + '\\')'"
+                                                    required>
+                                                <span class="input-group-text bg-light text-muted">€</span>
+                                            </div>
+
+                                            <button type="submit"
+                                                class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold btn-vender"
+                                                onclick="return confirm('¿Confirmas la venta de esta cantidad? El dinero irá a tu saldo al instante.');">
+                                                Vender
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${inversiones.isEmpty()}">
+                                    <td colspan="3" class="text-center py-5">
+                                        <div class="text-muted mb-3"><i class="bi bi-piggy-bank"
+                                                style="font-size: 3rem;"></i></div>
+                                        <h5 class="fw-bold">Aún no tienes inversiones</h5>
+                                        <p class="text-muted">Explora el mercado y haz tu primera aportación.</p>
+                                        <a href="/catalogo" class="btn fw-bold text-white px-4 rounded-pill mt-2"
+                                            style="background-color: var(--color-principal);">Ver Proyectos</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <h4 class="fw-bold mb-3" style="letter-spacing: -0.5px;"><i
+                        class="bi bi-pie-chart-fill me-2 text-muted"></i>Diversificación</h4>
+                <div class="card dashboard-card border-0 shadow-sm p-4 h-100">
+                    <div th:if="${inversiones.isEmpty()}" class="text-center text-muted my-auto py-5">
+                        <i class="bi bi-pie-chart text-light opacity-50" style="font-size: 5rem;"></i>
+                        <p class="mt-3 small fw-bold">No hay datos suficientes para generar el análisis.</p>
+                    </div>
+
+                    <div th:unless="${inversiones.isEmpty()}" class="chart-container">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+
+                    <div th:unless="${inversiones.isEmpty()}" class="mt-4 pt-3 border-top text-center">
+                        <p class="small text-muted mb-0"><i class="bi bi-info-circle-fill text-warning me-1"></i> Mantén
+                            tu cartera equilibrada por ciudades para reducir el riesgo de mercado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:if="${ultimaRenta != null}" th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const alerta = document.getElementById("alertaDividendos");
+            const btnCerrar = document.getElementById("btnCerrarDividendos");
+
+            if (alerta) {
+                const txId = /*[[${ultimaRenta.transactionID}]]*/ '0';
+                const key = "dividendo_tx_" + txId;
+
+                if (localStorage.getItem(key) === "cerrado") {
+                    alerta.remove();
+                } else if (btnCerrar) {
+                    btnCerrar.addEventListener("click", function () {
+                        localStorage.setItem(key, "cerrado");
+                        alerta.remove();
+                    });
+                }
+            }
+        });
+    </script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const datosBrutos = /*[[${datosGrafico}]]*/ {};
+        const etiquetas = Object.keys(datosBrutos);
+        const datosDinero = Object.values(datosBrutos);
+
+        if (etiquetas.length > 0) {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            const coloresLocoBrick = ['#FB6222', '#FFC107', '#111827', '#0dcaf0', '#198754', '#6c757d', '#d63384'];
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: etiquetas,
+                    datasets: [{
+                        data: datosDinero,
+                        backgroundColor: coloresLocoBrick,
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 20, font: { family: "'Inter', sans-serif", weight: 'bold' } } },
+                        tooltip: { callbacks: { label: function (context) { let label = context.label || ''; if (label) { label += ': '; } if (context.parsed !== null) { label += new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(context.parsed); } return label; } } }
+                    }
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+    <script>
+        function formatFintech(visibleInput, hiddenId) {
+            let valStr = visibleInput.value.replace(/\D/g, '');
+            if (valStr === '') valStr = '0';
+            let valInt = parseInt(valStr, 10);
+            document.getElementById(hiddenId).value = valInt;
+            let formatted = (valInt / 100).toFixed(2).replace('.', ',');
+            visibleInput.value = formatted;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocoBrick | Invierte en Inmuebles desde 100€</title>
+
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --color-principal: #FB6222;
+            --color-hover: #FFC107;
+            --color-fondo: #ffffff;
+            --color-texto-oscuro: #111827;
+            --color-texto-claro: #6B7280;
+            --fuente-fintech: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-fintech);
+            color: var(--color-texto-oscuro);
+            background-color: var(--color-fondo);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #f3f4f6;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--color-texto-oscuro) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--color-texto-oscuro) !important;
+            margin: 0 10px;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--color-hover) !important;
+        }
+
+        .btn-nav-login {
+            font-weight: 600;
+            color: var(--color-texto-oscuro);
+            background: transparent;
+            border: none;
+            transition: color 0.3s;
+        }
+
+        .btn-nav-login:hover {
+            color: var(--color-hover);
+        }
+
+        .btn-nav-registro {
+            font-weight: 600;
+            background-color: var(--color-principal);
+            color: white;
+            border-radius: 8px;
+            padding: 8px 20px;
+            border: 2px solid var(--color-principal);
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav-registro:hover {
+            background-color: var(--color-hover);
+            color: var(--color-texto-oscuro);
+            border-color: var(--color-hover);
+        }
+
+        .hero-section {
+            padding: 120px 0 80px 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            color: var(--color-texto-oscuro);
+        }
+
+        .hero-title span {
+            color: var(--color-principal);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--color-texto-claro);
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+            max-width: 90%;
+        }
+
+        .btn-hero {
+            background-color: var(--color-principal);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 16px 40px;
+            border-radius: 50px;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(251, 98, 34, 0.2);
+        }
+
+        .btn-hero:hover {
+            background-color: var(--color-hover);
+            color: var(--color-texto-oscuro);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(255, 193, 7, 0.3);
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .hero-img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .features-section {
+            padding: 100px 0;
+            background-color: white;
+        }
+
+        .feature-card {
+            padding: 40px 30px;
+            border-radius: 20px;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+            background: white;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--color-principal);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h4 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--color-texto-claro);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .fees-section {
+            padding: 80px 0;
+            background-color: #111827;
+            color: white;
+        }
+
+        .fee-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .fee-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--color-principal);
+        }
+
+        .fee-percentage {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--color-principal);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .risk-section {
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 80px 0;
+        }
+
+        .risk-scale {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            margin-top: 30px;
+            height: 40px;
+        }
+
+        .risk-level {
+            flex: 1;
+            position: relative;
+            height: 100%;
+            clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: transparent;
+            font-weight: 800;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .risk-1 { background-color: #2e7d32; }
+        .risk-2 { background-color: #4caf50; }
+        .risk-3 { background-color: #fbc02d; }
+        .risk-4 { background-color: #f57c00; }
+        .risk-5 { background-color: #e64a19; }
+        .risk-6 { background-color: #c62828; }
+
+        .risk-level.active {
+            background-color: #111827 !important;
+            color: white;
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .risk-level.active::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #111827;
+        }
+
+        .risk-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .footer {
+            background-color: #0f172a;
+            color: #94a3b8;
+            padding: 60px 0 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .footer-brand {
+            color: white;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .footer-link {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--color-hover);
+        }
+
+        @media (max-width: 991px) {
+            .hero-title { font-size: 3rem; }
+            .hero-section { padding-top: 100px; text-align: center; }
+            .hero-subtitle { margin: 0 auto 2rem auto; }
+            .hero-image-wrapper { margin-top: 50px; }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img th:src="@{/images/LocoBrick.png}" alt="Logo" style="height: 35px;">
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="/catalogo">Inmuebles</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#como-funciona">Cómo funciona</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-danger" href="/admin/propiedades"><i class="bi bi-shield-lock"></i> Admin</a>
+                    </li>
+                </ul>
+                <div class="d-flex gap-3 align-items-center mt-3 mt-lg-0">
+                    <th:block sec:authorize="!isAuthenticated()">
+                        <a href="/login" class="btn btn-nav-login text-decoration-none">Entrar</a>
+                        <a href="/registro" class="btn btn-nav-registro text-decoration-none">Abrir cuenta</a>
+                    </th:block>
+                    
+                    <th:block sec:authorize="isAuthenticated()">
+                        <a href="/mis-inversiones" class="btn btn-nav-login text-decoration-none me-2"><i class="bi bi-wallet2 me-1"></i> Mi Cartera</a>
+                        <a href="#" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold me-2" data-bs-toggle="modal" data-bs-target="#modalBorrarCuenta">Cerrar cuenta</a>
+                        <a href="/logout" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold">Salir</a>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 z-1">
+                    <h1 class="hero-title">Invierte en<br>ladrillo desde<br><span>100€</span></h1>
+                    <p class="hero-subtitle">Democratizamos la inversión inmobiliaria. Crea tu cartera de inmuebles, recibe rentas mensuales y haz crecer tu capital.</p>
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-lg-start justify-content-center">
+                        <a href="/registro" class="btn btn-hero text-decoration-none text-white">Empezar ahora <i class="bi bi-arrow-right ms-1"></i></a>
+                        <a href="/catalogo" class="btn btn-link text-decoration-none text-dark fw-bold mt-2 mt-sm-0 align-self-center nav-link">Ver propiedades</a>
+                    </div>
+                    <div class="mt-4 pt-3 d-flex align-items-center justify-content-lg-start justify-content-center gap-3" style="font-size: 0.9rem; font-weight: 600; color: #64748b;">
+                        <div><i class="bi bi-check-circle-fill text-success me-1"></i> Registro en 2 min</div>
+                        <div><i class="bi bi-check-circle-fill text-success me-1"></i> Capital garantizado</div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-5 mt-lg-0 position-relative">
+                    <div class="hero-image-wrapper text-center text-lg-end">
+                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Inversión Inmobiliaria" class="hero-img">
+                        <div class="position-absolute bg-white p-3 rounded-4 shadow-lg text-start" style="bottom: -20px; left: 10%; width: 220px; border: 1px solid #f1f5f9;">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="bg-success bg-opacity-10 text-success p-2 rounded-circle"><i class="bi bi-graph-up-arrow fs-5"></i></div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">+125€</h6><small class="text-muted">Renta cobrada</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="como-funciona" class="features-section">
+        <div class="container">
+            <div class="text-center mb-5 pb-3">
+                <h2 class="fw-bold display-6 mb-3" style="letter-spacing: -1px;">Invertir nunca fue tan fácil</h2>
+                <p class="text-muted fs-5">La tecnología al servicio de tus ahorros</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-pie-chart-fill"></i></div>
+                        <h4>Propiedad Fraccionada</h4>
+                        <p>No necesitas cientos de miles de euros. Divide la propiedad en participaciones pequeñas y compra solo lo que quieras invertir.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-calendar-check-fill"></i></div>
+                        <h4>Rentas Pasivas</h4>
+                        <p>Nosotros nos encargamos de los inquilinos, los seguros y las derramas. Tú solo entra a la app y ve cómo entra tu parte del alquiler.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="bi bi-shield-fill-check"></i></div>
+                        <h4>Total Liquidez</h4>
+                        <p>¿Necesitas el dinero? Vende tus participaciones a otros inversores dentro de nuestro mercado secundario con un solo clic.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="fees-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold display-6 mb-3" style="letter-spacing: -1px;">Cuentas Claras</h2>
+                <p class="text-white-50 fs-5">Sin letra pequeña. Solo ganamos si tú ganas.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="fee-card text-center">
+                        <div class="fee-percentage">0€</div>
+                        <h5 class="fw-bold mb-2">Crear Cuenta</h5>
+                        <p class="text-white-50 small mb-0">El registro y mantenimiento de tu cuenta en LocoBrick es 100% gratuito siempre.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="fee-card text-center">
+                        <div class="fee-percentage">2%</div>
+                        <h5 class="fw-bold mb-2">Comisión de Apertura</h5>
+                        <p class="text-white-50 small mb-0">Cargo único al comprar una participación para cubrir gastos de notaría y gestión.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="fee-card text-center">
+                        <div class="fee-percentage">1%</div>
+                        <h5 class="fw-bold mb-2">Gestión de Rentas</h5>
+                        <p class="text-white-50 small mb-0">Cobrada anualmente sobre los dividendos generados por gestionar a los inquilinos.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="fee-card text-center">
+                        <div class="fee-percentage">0€</div>
+                        <h5 class="fw-bold mb-2">Retiradas de Capital</h5>
+                        <p class="text-white-50 small mb-0">Saca tu dinero cuando quieras a tu cuenta bancaria sin ningún coste por transferencia.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="risk-section">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="mb-4"><i class="bi bi-shield-lock-fill text-warning fs-1"></i></div>
+                    <h3 class="fw-bold mb-3">Transparencia y Regulación</h3>
+                    <p class="text-muted mb-5 fs-5">En LocoBrick nos tomamos muy en serio la transparencia de tu capital. Mostramos el <strong>Indicador de Riesgo</strong> en todos nuestros proyectos.</p>
+                    <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm mx-auto" style="max-width: 550px; border: 1px solid #e2e8f0;">
+                        <h5 class="fw-bold text-dark mb-1">Indicador de Riesgo Ejemplo</h5>
+                        <p class="text-muted small mb-0">Cada propiedad tiene su propio nivel de riesgo asignado.</p>
+                        <div class="risk-scale">
+                            <div class="risk-level risk-1">1</div>
+                            <div class="risk-level risk-2">2</div>
+                            <div class="risk-level risk-3">3</div>
+                            <div class="risk-level risk-4">4</div>
+                            <div class="risk-level risk-5 active">5</div>
+                            <div class="risk-level risk-6">6</div>
+                        </div>
+                        <div class="risk-labels"><span>Menor riesgo</span><span>Mayor riesgo</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <a href="/" class="footer-brand d-flex align-items-center gap-2">
+                        <img th:src="@{/images/LocoBrick.png}" alt="Logo" style="height: 30px; filter: grayscale(1) brightness(2);">LocoBrick
+                    </a>
+                    <p class="mb-4">Tu plataforma de confianza para la inversión inmobiliaria colaborativa en España.</p>
+                </div>
+                <div class="col-lg-2 col-6 mb-4 mb-lg-0">
+                    <h6 class="text-white fw-bold mb-3">Plataforma</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="/catalogo" class="footer-link">Inmuebles</a></li>
+                        <li><a href="/registro" class="footer-link">Registrarse</a></li>
+                        <li><a href="/login" class="footer-link">Iniciar sesión</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6 mb-4 mb-lg-0">
+                    <h6 class="text-white fw-bold mb-3">Legal</h6>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="/terminos" class="footer-link">Términos y condiciones</a></li>
+                        <li><a href="/privacidad" class="footer-link">Política de privacidad</a></li>
+                        <li><a href="/riesgos" class="footer-link">Riesgos</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-top border-secondary pt-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <div>&copy; 2026 LocoBrick. Todos los derechos reservados.</div>
+                <div class="d-flex gap-3">
+                    <a href="https://x.com/FabrizioFauno" class="footer-link fs-5"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="footer-link fs-5"><i class="bi bi-instagram"></i></a>
+                    <a href="https://www.infojobs.net/sevilla/invitado-vip-velada-vi/of-i918d80929743d0a1ea5871aac51943?applicationOrigin=Corporativas-DP" class="footer-link fs-5"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .chatbot-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: 'Inter', sans-serif; }
+        .chatbot-toggle-btn { width: 60px; height: 60px; background-color: var(--color-principal, #FB6222); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(251, 98, 34, 0.4); transition: all 0.3s ease; border: none; float: right; }
+        .chatbot-toggle-btn:hover { background-color: var(--color-hover, #FFC107); color: #111827; transform: scale(1.05); }
+        .chatbot-window { width: 350px; height: 450px; background-color: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); display: none; flex-direction: column; overflow: hidden; margin-bottom: 15px; border: 1px solid #f1f5f9; }
+        .chatbot-header { background-color: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .chatbot-messages { flex: 1; padding: 15px; overflow-y: auto; background-color: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
+        .chat-bubble { max-width: 80%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
+        .bot-bubble { background-color: white; color: #111827; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); }
+        .user-bubble { background-color: var(--color-principal, #FB6222); color: white; align-self: flex-end; border-bottom-right-radius: 2px; box-shadow: 0 2px 5px rgba(251, 98, 34, 0.2); }
+        .chatbot-input-area { padding: 10px 15px; background-color: white; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; }
+        .chatbot-input-area input { flex: 1; border: 1px solid #e2e8f0; border-radius: 20px; padding: 8px 15px; outline: none; font-size: 0.9rem; }
+        .chatbot-input-area input:focus { border-color: var(--color-principal, #FB6222); }
+        .chatbot-input-area button { background-color: var(--color-principal, #FB6222); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; transition: 0.2s; }
+        .chatbot-input-area button:hover { background-color: var(--color-hover, #FFC107); color: #111827; }
+        .bot-action-btn { display: inline-block; margin-top: 8px; background-color: #111827; color: white !important; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; }
+        .bot-action-btn:hover { background-color: var(--color-hover, #FFC107); color: #111827 !important; }
+    </style>
+
+    <div class="chatbot-wrapper">
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <span><i class="bi bi-robot me-2"></i> Asistente LocoBrick</span>
+                <i class="bi bi-x-lg" style="cursor: pointer;" onclick="toggleChat()"></i>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-bubble bot-bubble">¡Hola! 👋 Soy el asistente de LocoBrick. ¿En qué puedo ayudarte?</div>
+            </div>
+            <div class="chatbot-input-area">
+                <input type="text" id="chatInput" placeholder="Escribe tu duda..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()"><i class="bi bi-send-fill"></i></button>
+            </div>
+        </div>
+        <button class="chatbot-toggle-btn" id="chatToggleBtn" onclick="toggleChat()">
+            <i class="bi bi-chat-dots-fill"></i>
+        </button>
+    </div>
+
+    <script>
+        const knowledgeBase = [
+            { keywords: ["como funciona", "que es esto", "explicacion", "como invierto"], response: "LocoBrick te permite invertir en inmuebles de forma fraccionada. Tú compras una pequeña parte y recibes rentas proporcionales.", buttonText: "Ver cómo funciona", buttonLink: "/#como-funciona" },
+            { keywords: ["comprar", "invertir", "catalogo", "casas", "propiedades"], response: "Ve a nuestro catálogo, elige la propiedad que te guste y selecciona cuánto quieres invertir.", buttonText: "Ir al Catálogo", buttonLink: "/catalogo" },
+            { keywords: ["vender", "desinvertir", "recuperar"], response: "Puedes vender tus participaciones en cualquier momento desde tu panel de 'Mis Inversiones'.", buttonText: "Ir a Mis Inversiones", buttonLink: "/mis-inversiones" },
+            { keywords: ["minimo", "cuanto dinero"], response: "Puedes empezar a aportar desde tan solo 100€ por proyecto.", buttonText: "Ver Proyectos", buttonLink: "/catalogo" },
+            { keywords: ["rentas", "beneficios", "cuando cobro"], response: "Las rentas se reparten de forma mensual y se suman automáticamente a tu Cartera.", buttonText: "Ver mi Cartera", buttonLink: "/mis-inversiones" }
+        ];
+
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatbotWindow');
+            const icon = document.querySelector('#chatToggleBtn i');
+            if (chatWindow.style.display === 'flex') {
+                chatWindow.style.display = 'none';
+                icon.className = 'bi bi-chat-dots-fill';
+            } else {
+                chatWindow.style.display = 'flex';
+                icon.className = 'bi bi-x-lg';
+                document.getElementById('chatInput').focus();
+            }
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+
+        function sendMessage() {
+            const inputField = document.getElementById('chatInput');
+            const userText = inputField.value.trim();
+            if (!userText) return;
+
+            addMessage(userText, 'user');
+            inputField.value = '';
+
+            setTimeout(() => {
+                const reply = findAnswer(userText);
+                addMessage(reply.text, 'bot', reply.actionBtn);
+            }, 500);
+        }
+
+        function findAnswer(text) {
+            const cleanText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            if (cleanText.includes("animal con menos pelo") || cleanText.includes("animal que tiene menos pelo")) {
+                return { text: "Esa es fácil... ¡Aitor de la Cueva! 👨‍🦲😂", actionBtn: "" };
+            }
+
+            for (let item of knowledgeBase) {
+                for (let keyword of item.keywords) {
+                    if (cleanText.includes(keyword)) {
+                        return { text: item.response, actionBtn: item.buttonLink ? `<br><a href="${item.buttonLink}" class="bot-action-btn">${item.buttonText}</a>` : "" };
+                    }
+                }
+            }
+            return { text: "Soy un bot de navegación. Intenta preguntar sobre cómo invertir, comisiones o rentabilidad.", actionBtn: "" };
+        }
+
+        function addMessage(text, sender, extraHTML = "") {
+            const chatBox = document.getElementById('chatbotMessages');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${sender}-bubble`;
+            bubble.innerHTML = text + extraHTML;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) { navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)'; }
+            else { navbar.style.boxShadow = 'none'; }
+        });
+    </script>
+
+    <div class="modal fade" id="modalBorrarCuenta" tabindex="-1" aria-labelledby="modalBorrarCuentaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="modalBorrarCuentaLabel">
+                        <i class="bi bi-exclamation-triangle-fill"></i> ¿Seguro que desea cerrar la cuenta?
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <p class="mb-0">Se le enviará un correo de verificación y esta acción será irreversible.</p>
+                    <p class="text-muted small mt-2">Perderá el acceso a LocoBrick y a su capital invertido.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form th:action="@{/solicitar-borrado}" method="post" id="formBorrarCuenta">
+                        <button type="submit" class="btn btn-danger fw-bold">Sí, quiero borrarla</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCorreoEnviado" tabindex="-1" aria-labelledby="modalCorreoEnviadoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-warning">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold" id="modalCorreoEnviadoLabel">
+                        <i class="bi bi-envelope-check-fill"></i> ¡Correo Enviado!
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <p class="fs-5 mb-2">Revisa tu bandeja de entrada</p>
+                    <p class="text-muted">Hemos enviado un enlace de confirmación para eliminar tu cuenta. Revisa también la carpeta de Spam.</p>
+                </div>
+                <div class="modal-footer justify-content-center border-0 pt-0">
+                    <button type="button" class="btn btn-warning fw-bold px-4" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:if="${param.aviso != null and param.aviso[0] == 'borrado_solicitado'}">
+        document.addEventListener("DOMContentLoaded", function () {
+            // Coge el modal de Correo Enviado
+            var elModal = document.getElementById('modalCorreoEnviado');
+            if (elModal) {
+                var miModal = new bootstrap.Modal(elModal, {
+                    keyboard: false
+                });
+                miModal.show(); // Lo abre en el centro de la pantalla
+                // Limpia la URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+    </script>
+
+</body>
+</html>

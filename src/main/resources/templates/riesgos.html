@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Advertencia de Riesgos - LocoBrick</title>
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --color-principal: #FB6222;
+            --color-hover: #FFC107;
+            --color-fondo: #f8fafc;
+            --color-texto-oscuro: #111827;
+            --fuente-fintech: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-fintech);
+            background-color: var(--color-fondo);
+            color: var(--color-texto-oscuro);
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #f3f4f6;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--color-texto-oscuro) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .legal-header {
+            background: #dc3545;
+            color: white;
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+
+        /* Cabecera roja para advertencia de riesgo */
+        .legal-header h1 {
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .legal-content {
+            max-width: 800px;
+            margin: -40px auto 50px;
+            background: white;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .legal-content h3 {
+            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            color: #111827;
+        }
+
+        .legal-content p,
+        .legal-content li {
+            color: #4b5563;
+            line-height: 1.8;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .legal-content ul {
+            padding-left: 20px;
+        }
+
+        .alert-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            color: #856404;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img th:src="@{/images/LocoBrick.png}" alt="Logo" style="height: 35px;"> LocoBrick
+            </a>
+            <div class="d-flex gap-3 align-items-center mt-3 mt-lg-0 ms-auto">
+                <a href="/" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">← Volver al Inicio</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="legal-header">
+        <div class="container">
+            <h1><i class="bi bi-exclamation-triangle-fill me-2"></i> Advertencia de Riesgos</h1>
+            <p class="fs-5 text-white-50">Información importante antes de invertir tu capital.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="legal-content">
+
+            <div class="alert-box">
+                <i class="bi bi-info-circle-fill me-2"></i> Toda inversión conlleva riesgos, incluida la pérdida parcial
+                o total del capital invertido. Rentabilidades pasadas no garantizan rentabilidades futuras.
+            </div>
+
+            <p>La inversión en proyectos inmobiliarios a través de LocoBrick está sujeta a diversos riesgos que el
+                inversor debe conocer y asumir antes de tomar decisiones financieras. Le recomendamos diversificar su
+                cartera y no invertir dinero que pueda necesitar a corto plazo.</p>
+
+            <h3>1. Riesgo de pérdida de capital</h3>
+            <p>El valor de los inmuebles puede fluctuar hacia arriba o hacia abajo dependiendo de las condiciones del
+                mercado macroeconómico, la situación del sector inmobiliario o problemas específicos del activo. Existe
+                el riesgo de que al momento de la venta de la propiedad, el valor sea inferior al de compra, resultando
+                en una pérdida de capital.</p>
+
+            <h3>2. Riesgo de liquidez</h3>
+            <p>Las inversiones inmobiliarias son, por naturaleza, activos ilíquidos. Aunque LocoBrick proporciona un
+                mercado secundario para la venta de participaciones entre usuarios, <strong>no garantizamos</strong> que
+                encuentre un comprador de forma inmediata ni al precio deseado. Podría tener que mantener su inversión
+                hasta la liquidación final del proyecto.</p>
+
+            <h3>3. Riesgo de variabilidad de las rentas (Dividendos)</h3>
+            <p>Las estimaciones de rentabilidad presentadas en la plataforma son proyecciones basadas en datos de
+                mercado actuales, pero <strong>no son retornos garantizados</strong>. Los ingresos por alquiler pueden
+                verse afectados por:</p>
+            <ul>
+                <li>Periodos de desocupación (el inmueble se queda vacío).</li>
+                <li>Impagos o retrasos por parte de los inquilinos (morosidad).</li>
+                <li>Gastos imprevistos de reparación, derramas de la comunidad o incrementos en impuestos locales.</li>
+            </ul>
+
+            <h3>4. Regulación</h3>
+            <p>El marco regulatorio del crowdfunding y el sector inmobiliario está sujeto a cambios por parte de las
+                autoridades gubernamentales. Cambios en la legislación fiscal o de vivienda podrían afectar
+                negativamente a la rentabilidad proyectada de los proyectos.</p>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${propiedad.name} + ' - LocoBrick'">Propiedad</title>
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --color-principal: #FB6222;
+            --color-hover: #FFC107;
+            --fuente-fintech: 'Inter', sans-serif;
+            --color-texto-oscuro: #111827;
+        }
+
+        body {
+            font-family: var(--fuente-fintech);
+            background-color: #f8fafc;
+            color: var(--color-texto-oscuro);
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #f3f4f6;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--color-texto-oscuro) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--color-texto-oscuro) !important;
+            margin: 0 10px;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--color-hover) !important;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .risk-indicator-container {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .risk-scale {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            margin-top: 30px;
+            height: 40px;
+        }
+
+        .risk-level {
+            flex: 1;
+            position: relative;
+            height: 100%;
+            clip-path: polygon(15% 0%, 100% 0%, 85% 100%, 0% 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: transparent;
+            font-weight: 800;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .risk-1 {
+            background-color: #2e7d32;
+        }
+
+        .risk-2 {
+            background-color: #4caf50;
+        }
+
+        .risk-3 {
+            background-color: #fbc02d;
+        }
+
+        .risk-4 {
+            background-color: #f57c00;
+        }
+
+        .risk-5 {
+            background-color: #e64a19;
+        }
+
+        .risk-6 {
+            background-color: #c62828;
+        }
+
+        .risk-level.active {
+            background-color: #111827 !important;
+            color: white;
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .risk-level.active::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #111827;
+        }
+
+        .risk-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .btn-comprar {
+            background-color: var(--color-principal);
+            color: white;
+            font-weight: 700;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-comprar:hover:not(:disabled) {
+            background-color: var(--color-hover);
+            color: var(--color-texto-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-comprar:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .volver-link {
+            transition: color 0.3s ease;
+        }
+
+        .volver-link:hover {
+            color: var(--color-hover) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img th:src="@{/images/LocoBrick.png}" alt="Logo" style="height: 35px;">
+            </a>
+            <div>
+                <a href="/catalogo" class="btn btn-link text-dark text-decoration-none fw-bold me-3 volver-link">←
+                    Volver al catálogo</a>
+                <th:block sec:authorize="isAuthenticated()">
+                    <a href="/mis-inversiones" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">Mi
+                        Cartera</a>
+                </th:block>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card mb-4 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                        class="img-fluid w-100" style="height: 400px; object-fit: cover;" alt="Inmueble">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h2 class="fw-bold mb-1" th:text="${propiedad.name}">Nombre Propiedad</h2>
+                                <p class="text-muted fs-5 mb-0"><i class="bi bi-geo-alt-fill text-danger"></i> <span
+                                        th:text="${propiedad.zona.city + ' - ' + propiedad.zona.district}">Ciudad</span>
+                                </p>
+                            </div>
+                            <span class="badge bg-success fs-6 px-3 py-2 rounded-pill"
+                                th:if="${propiedad.status == 'Disponible'}">Disponible</span>
+                            <span class="badge bg-warning text-dark fs-6 px-3 py-2 rounded-pill"
+                                th:unless="${propiedad.status == 'Disponible'}"
+                                th:text="${propiedad.status}">Estado</span>
+                        </div>
+                        <hr class="text-muted opacity-25">
+                        <h5 class="fw-bold mt-4">Descripción del Proyecto</h5>
+                        <p class="text-secondary" style="line-height: 1.8;" th:text="${propiedad.description}">
+                            Descripción...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-end mb-4">
+                        <div>
+                            <h6 class="text-muted fw-bold small text-uppercase mb-1">Valor Total</h6>
+                            <h4 class="fw-bold text-muted text-decoration-line-through mb-0"
+                                th:text="${#numbers.formatDecimal(valorEuros, 0, 'POINT', 0, 'COMMA') + ' €'}">0 €</h4>
+                        </div>
+                        <div class="text-end">
+                            <h6 class="text-primary fw-bold small text-uppercase mb-1"
+                                style="color: var(--color-principal) !important;">Disponible</h6>
+                            <h2 class="fw-bold text-dark mb-0"
+                                th:text="${#numbers.formatDecimal(valorRestanteEuros, 0, 'POINT', 0, 'COMMA') + ' €'}">0
+                                €</h2>
+                        </div>
+                    </div>
+
+                    <div class="progress mb-4" style="height: 10px;">
+                        <div class="progress-bar" role="progressbar"
+                            th:style="'background-color: var(--color-principal); width: ' + ${(propiedad.value - propiedad.valorRestante) * 100.0 / propiedad.value} + '%'">
+                        </div>
+                    </div>
+
+                    <form th:action="@{'/propiedad/' + ${propiedad.propertyID} + '/comprar'}" method="post" onsubmit="return verificarSaldo(event)">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-secondary">¿Cuánto quieres pagar en total?</label>
+                            <div class="input-group input-group-lg shadow-sm">
+                                <span class="input-group-text bg-white border-end-0">€</span>
+                                <input type="number" id="cantidadInvertir" name="cantidad"
+                                    class="form-control border-start-0 ps-0 fw-bold" required min="10" step="0.01"
+                                    th:max="${costeTotalComprarTodoEuros}" placeholder="Ej: 100"
+                                    th:disabled="${propiedad.valorRestante <= 0}">
+                            </div>
+                            <div class="small text-muted mt-2">
+                                <i class="bi bi-info-circle text-primary"></i> Del total, el <strong>98%</strong> es
+                                inversión y el <strong>2%</strong> comisión.
+                            </div>
+                        </div>
+
+                        <button type="button"
+                            class="btn btn-light border w-100 fw-bold mb-3 d-flex justify-content-between align-items-center"
+                            th:if="${propiedad.valorRestante > 0}"
+                            th:onclick="'document.getElementById(\'cantidadInvertir\').value = ' + ${costeTotalComprarTodoEuros} + ';'">
+                            <span><i class="bi bi-cart-check-fill text-success me-2"></i> Comprar TODO</span>
+                            <span
+                                th:text="${#numbers.formatDecimal(costeTotalComprarTodoEuros, 0, 'POINT', 2, 'COMMA')} + ' €'"></span>
+                        </button>
+
+                        <button type="submit" class="btn btn-comprar shadow-sm"
+                            th:disabled="${propiedad.valorRestante <= 0}">
+                            <span
+                                th:text="${propiedad.valorRestante > 0 ? 'Confirmar Pago' : 'Proyecto Financiado'}"></span>
+                        </button>
+                    </form>
+
+                    <div class="mt-2 text-center text-muted small">Saldo disponible: <span
+                            th:text="${usuario != null ? #numbers.formatDecimal(saldoEuros, 0, 'POINT', 2, 'COMMA') + ' €' : '---'}">0,00
+                            €</span></div>
+
+                    <div th:if="${param.error == 'saldo'}" class="alert alert-danger mt-3 mb-0 small fw-bold">
+                        <i class="bi bi-exclamation-circle-fill"></i> Saldo insuficiente. Puedes pagar un máximo de
+                        <span th:text="${param.max}"></span> €.
+                    </div>
+                    <div th:if="${param.error == 'exceso'}" class="alert alert-warning mt-3 mb-0 small fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Estás intentando pagar más del valor que queda
+                        libre en la propiedad.
+                    </div>
+                </div>
+
+                <div class="card p-4">
+                    <h6 class="fw-bold text-dark mb-1">Nivel de Riesgo</h6>
+                    <p class="text-muted small mb-0">El indicador asume que mantendrás la inversión hasta la venta.</p>
+                    <div class="risk-indicator-container">
+                        <div class="risk-scale">
+                            <div class="risk-level risk-1">1</div>
+                            <div class="risk-level risk-2">2</div>
+                            <div class="risk-level risk-3">3</div>
+                            <div class="risk-level risk-4">4</div>
+                            <div class="risk-level risk-5 active">5</div>
+                            <div class="risk-level risk-6">6</div>
+                        </div>
+                        <div class="risk-labels"><span>Menor riesgo</span><span>Mayor riesgo</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:inline="javascript">
+        function verificarSaldo(event) {
+            // Comprobamos si el usuario ha iniciado sesión
+            var isAuth = /*[[${usuario != null}]]*/ false;
+            
+            // Si no está logueado, dejamos que el formulario continúe para que le salte la pantalla de Login
+            if (!isAuth) {
+                return true; 
+            }
+
+            // Obtenemos el saldo y lo que intenta comprar
+            var saldoEuros = /*[[${saldoEuros != null ? saldoEuros : 0}]]*/ 0;
+            var cantidadInput = document.getElementById('cantidadInvertir').value;
+            var cantidadInvertir = parseFloat(cantidadInput);
+            
+            if (cantidadInvertir > saldoEuros) {
+                event.preventDefault(); // Bloquea el envío al servidor
+                alert("❌ Operación denegada\n\nNo tienes saldo suficiente en tu cartera de LocoBrick para realizar esta compra.\n\nTu saldo disponible actual es de " + saldoEuros.toFixed(2).replace('.', ',') + " €.");
+                return false;
+            }
+            
+            return true;
+        }
+    </script>
+
+    <style>
+        .chatbot-wrapper {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .chatbot-toggle-btn {
+            width: 60px;
+            height: 60px;
+            background-color: var(--color-principal, #FB6222);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(251, 98, 34, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            float: right;
+        }
+
+        .chatbot-toggle-btn:hover {
+            background-color: var(--color-hover, #FFC107);
+            color: #111827;
+            transform: scale(1.05);
+        }
+
+        .chatbot-window {
+            width: 350px;
+            height: 450px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .chatbot-header {
+            background-color: #111827;
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .bot-bubble {
+            background-color: white;
+            color: #111827;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-bubble {
+            background-color: var(--color-principal, #FB6222);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 2px 5px rgba(251, 98, 34, 0.2);
+        }
+
+        .chatbot-input-area {
+            padding: 10px 15px;
+            background-color: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chatbot-input-area input {
+            flex: 1;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 8px 15px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .chatbot-input-area input:focus {
+            border-color: var(--color-principal, #FB6222);
+        }
+
+        .chatbot-input-area button {
+            background-color: var(--color-principal, #FB6222);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .chatbot-input-area button:hover {
+            background-color: var(--color-hover, #FFC107);
+            color: #111827;
+        }
+
+        .bot-action-btn {
+            display: inline-block;
+            margin-top: 8px;
+            background-color: #111827;
+            color: white !important;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .bot-action-btn:hover {
+            background-color: var(--color-hover, #FFC107);
+            color: #111827 !important;
+        }
+    </style>
+    <div class="chatbot-wrapper">
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <span><i class="bi bi-robot me-2"></i> Asistente LocoBrick</span>
+                <i class="bi bi-x-lg" style="cursor: pointer;" onclick="toggleChat()"></i>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-bubble bot-bubble">¡Hola! 👋 Qué alegría verte por aquí. Soy el asistente virtual de
+                    LocoBrick. ¿En qué puedo ayudarte con tus inversiones hoy?</div>
+            </div>
+            <div class="chatbot-input-area">
+                <input type="text" id="chatInput" placeholder="Escribe tu duda..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()"><i class="bi bi-send-fill"></i></button>
+            </div>
+        </div>
+        <button class="chatbot-toggle-btn" id="chatToggleBtn" onclick="toggleChat()"><i
+                class="bi bi-chat-dots-fill"></i></button>
+    </div>
+    <script>
+        const knowledgeBase = [
+            { keywords: ["como funciona", "que es esto", "explicacion", "de que va", "como invierto"], response: "LocoBrick te permite invertir en inmuebles de forma fraccionada. Nosotros seleccionamos y gestionamos las propiedades, y tú compras una pequeña parte. Así, recibes rentas mensuales proporcionales y ganas dinero con la revalorización del activo.", buttonText: "Ver cómo funciona", buttonLink: "/#como-funciona" },
+            { keywords: ["comprar", "invertir", "adquirir", "participar", "catalogo", "casas", "propiedades", "inmuebles"], response: "Para comprar participaciones, primero debes registrarte y depositar fondos. Luego, entra en nuestro catálogo, elige la propiedad que te guste y selecciona cuánto quieres invertir.", buttonText: "Ir al Catálogo", buttonLink: "/catalogo" },
+            { keywords: ["vender", "liquidar", "desinvertir", "recuperar", "venta"], response: "Puedes vender tus participaciones en cualquier momento desde tu panel de 'Mis Inversiones'. Solo tienes que hacer clic en el botón 'Vender' del activo correspondiente y el dinero volverá a tu saldo disponible al instante.", buttonText: "Ir a Mis Inversiones", buttonLink: "/mis-inversiones" },
+            { keywords: ["minimo", "cuanto dinero", "inversion minima", "cantidad minima", "desde cuanto"], response: "¡Democratizamos la inversión! En LocoBrick puedes empezar a crear tu cartera inmobiliaria aportando desde tan solo 100€ por proyecto.", buttonText: "Ver Proyectos", buttonLink: "/catalogo" },
+            { keywords: ["saldo", "depositar", "ingresar", "retirar", "sacar dinero", "transferencia", "fondos", "wallet"], response: "Para gestionar tu dinero (ingresar o retirar fondos a tu cuenta bancaria), ve a la sección de tu Cartera. Usa los botones de 'Depositar' o 'Retirar'. Las transferencias de retiro suelen tardar entre 1 y 2 días hábiles.", buttonText: "Gestionar Fondos", buttonLink: "/mis-inversiones" },
+            { keywords: ["rentas", "beneficios", "ganancias", "cuando cobro", "dividendos", "rentabilidad"], response: "Las rentas generadas por los alquileres de tus propiedades se reparten de forma mensual. Verás los ingresos sumados automáticamente al saldo disponible de tu Cartera.", buttonText: "Ver mi Cartera", buttonLink: "/mis-inversiones" }
+        ];
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatbotWindow');
+            const icon = document.querySelector('#chatToggleBtn i');
+            if (chatWindow.style.display === 'flex') {
+                chatWindow.style.display = 'none';
+                icon.className = 'bi bi-chat-dots-fill';
+            } else {
+                chatWindow.style.display = 'flex';
+                icon.className = 'bi bi-x-lg';
+                document.getElementById('chatInput').focus();
+            }
+        }
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+        function sendMessage() {
+            const inputField = document.getElementById('chatInput');
+            const userText = inputField.value.trim();
+            if (!userText) return;
+            addMessage(userText, 'user');
+            inputField.value = '';
+            setTimeout(() => {
+                const reply = findAnswer(userText);
+                addMessage(reply.text, 'bot', reply.actionBtn);
+            }, 500);
+        }
+        function findAnswer(text) {
+            const cleanText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (cleanText.match(/^(hola|buenas|que tal|saludos|hey|buenos dias|buenas tardes)/)) return { text: "¡Hola! 👋 Qué alegría verte por aquí. Soy el asistente virtual de LocoBrick. ¿En qué puedo ayudarte con tus inversiones hoy?", actionBtn: "" };
+            if (cleanText.match(/(adios|hasta luego|chao|nos vemos)/)) return { text: "¡Hasta pronto! 👋 Recuerda que el mercado inmobiliario nunca duerme. ¡Vuelve cuando quieras!", actionBtn: "" };
+            if (cleanText.match(/(quien eres|como te llamas|eres un robot|eres ia|que eres)/)) return { text: "Soy LocoBot 🤖, el asistente virtual de LocoBrick. Estoy aquí para guiarte por la plataforma, ayudarte a invertir y resolver tus dudas básicas. ¡No pido sueldo, solo que me uses!", actionBtn: "" };
+            if (cleanText.includes("animal con menos pelo") || cleanText.includes("animal que tiene menos pelo")) return { text: "Esa es fácil... ¡Aitor de la Cueva! 👨‍🦲😂", actionBtn: "" };
+            for (let item of knowledgeBase) {
+                for (let keyword of item.keywords) {
+                    if (cleanText.includes(keyword)) return { text: item.response, actionBtn: item.buttonLink ? `<br><a href="${item.buttonLink}" class="bot-action-btn">${item.buttonText}</a>` : "" };
+                }
+            }
+            return { text: "Mmm, no estoy seguro de entender eso. 🤔<br>Soy un bot de navegación, así que se me da genial ayudarte con cosas como:<br>👉 <i>'Quiero comprar'</i><br>👉 <i>'Ver mi cartera'</i><br>👉 <i>'Depositar dinero'</i>", actionBtn: "" };
+        }
+        function addMessage(text, sender, extraHTML = "") {
+            const chatBox = document.getElementById('chatbotMessages');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${sender}-bubble`;
+            bubble.innerHTML = text + extraHTML;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>

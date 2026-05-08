@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Inversiones - LocoBrick</title>
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --color-principal: #FB6222;
+            --color-hover: #FFC107;
+            --color-fondo: #f8fafc;
+            --color-texto-oscuro: #111827;
+            --fuente-fintech: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-fintech);
+            background-color: var(--color-fondo);
+            color: var(--color-texto-oscuro);
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #f3f4f6;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--color-texto-oscuro) !important;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: var(--color-texto-oscuro) !important;
+            margin: 0 10px;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--color-hover) !important;
+        }
+
+        .filtro-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .propiedad-card {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            background: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .propiedad-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .propiedad-img {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .propiedad-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .badge-estado {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 50px;
+            z-index: 10;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-ver {
+            background-color: var(--color-texto-oscuro);
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
+            padding: 12px;
+            width: 100%;
+            margin-top: auto;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-ver:hover {
+            background-color: var(--color-principal);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 98, 34, 0.3);
+        }
+        
+        .input-group-text {
+            background-color: #f8fafc;
+            border-color: #e2e8f0;
+        }
+        
+        .form-control, .form-select {
+            border-color: #e2e8f0;
+            padding: 12px 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--color-principal);
+            box-shadow: 0 0 0 0.25rem rgba(251, 98, 34, 0.25);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img th:src="@{/images/LocoBrick.png}" alt="Logo" style="height: 35px;">
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/catalogo"
+                            style="color: var(--color-principal) !important;">Inmuebles</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-danger" href="/admin/propiedades"><i class="bi bi-shield-lock"></i>
+                            Panel Admin</a>
+                    </li>
+                </ul>
+                <div class="d-flex gap-3 align-items-center mt-3 mt-lg-0">
+                    <th:block sec:authorize="isAnonymous()">
+                        <a href="/login" class="nav-link">Entrar</a>
+                        <a href="/registro" class="btn text-white rounded-pill px-4 fw-bold"
+                            style="background-color: var(--color-principal);">Empezar</a>
+                    </th:block>
+                    <th:block sec:authorize="isAuthenticated()">
+                        <a href="/mis-inversiones" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">Mi
+                            Cartera</a>
+                        <a href="/logout" class="btn btn-dark btn-sm rounded-pill px-3 fw-bold">Salir</a>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold" style="letter-spacing: -1px; font-size: 2.5rem;">Oportunidades de Inversión</h1>
+            <p class="text-muted fs-5">Filtra y descubre los mejores proyectos inmobiliarios analizados por nuestros
+                expertos.</p>
+        </div>
+
+        <div class="filtro-card">
+            <form action="/catalogo" method="get" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">Ciudad</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-geo-alt text-muted"></i></span>
+                        <select name="ciudad" class="form-select">
+                            <option value="">Todas las ciudades</option>
+                            <option th:each="c : ${ciudadesDisponibles}" th:value="${c}" th:text="${c}"
+                                th:selected="${c == ciudadSeleccionada}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">Presupuesto Máximo (€)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-currency-euro text-muted"></i></span>
+                        <input type="number" id="precio" name="precio" class="form-control" placeholder="Ej: 500000"
+                            th:value="${precioSeleccionado != null ? precioSeleccionado : ''}" step="10000" min="0">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn w-100 fw-bold text-white shadow-sm"
+                        style="background-color: var(--color-principal); padding: 12px; border-radius: 8px;">
+                        <i class="bi bi-search me-1"></i> Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6" th:each="p : ${propiedades}">
+                <div class="propiedad-card position-relative">
+                    <span class="badge bg-success badge-estado" th:if="${p.status == 'Disponible'}"><i
+                            class="bi bi-check-circle-fill me-1"></i> Disponible</span>
+                    <span class="badge bg-dark badge-estado" th:unless="${p.status == 'Disponible'}"
+                        th:text="${p.status}"></span>
+
+                    <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        class="propiedad-img" alt="Inmueble">
+
+                    <div class="propiedad-body">
+                        <h5 class="fw-bold mb-1 text-truncate" th:text="${p.name}">Nombre</h5>
+                        <p class="text-muted small mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i> <span
+                                th:text="${p.zona.city + ', ' + p.zona.district}">Ciudad</span></p>
+
+                        <div class="d-flex justify-content-between mb-3 p-3 bg-light rounded-3">
+                            <div>
+                                <p class="text-muted small mb-0 fw-bold text-uppercase" style="font-size: 0.7rem;">Valor
+                                    Total</p>
+                                <span class="text-decoration-line-through text-muted fw-bold"
+                                    th:text="${#numbers.formatDecimal(p.value / 100.0, 0, 'POINT', 0, 'COMMA')} + ' €'">0
+                                    €</span>
+                            </div>
+                            <div class="text-end">
+                                <p class="text-primary small mb-0 fw-bold text-uppercase"
+                                    style="font-size: 0.7rem; color: var(--color-principal) !important;">Aún Disponible
+                                </p>
+                                <span class="fw-bold text-dark fs-5"
+                                    th:text="${#numbers.formatDecimal(p.valorRestante / 100.0, 0, 'POINT', 0, 'COMMA')} + ' €'">0
+                                    €</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between small fw-bold mb-1">
+                                <span class="text-muted">Financiado</span>
+                                <span class="text-dark"
+                                    th:text="${#numbers.formatDecimal(((p.value - p.valorRestante) * 100.0) / p.value, 1, 'POINT', 0, 'COMMA')} + '%'">0%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" role="progressbar"
+                                    th:style="'background-color: var(--color-principal); width: ' + ${(p.value - p.valorRestante) * 100.0 / p.value} + '%'">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="small text-muted fw-bold"><i
+                                    class="bi bi-graph-up-arrow text-success me-1"></i> Rentabilidad est.</span>
+
+                            <span class="badge bg-success bg-opacity-10 text-success fw-bold px-2 py-1 fs-6"
+                                th:text="'+' + ${p.rentaMensual != null ? #numbers.formatDecimal((p.rentaMensual * 12) / 100.0, 0, 'POINT', 0, 'COMMA') : #numbers.formatDecimal((p.value / 100.0) * 0.065, 0, 'POINT', 0, 'COMMA')} + ' €/año'">
+                            </span>
+                        </div>
+
+                        <a th:href="@{'/propiedad/' + ${p.propertyID}}" class="btn btn-ver mt-auto">Analizar
+                            Proyecto</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-center py-5" th:if="${propiedades.isEmpty()}">
+                <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                <h4 class="fw-bold mt-3">No hay proyectos que coincidan</h4>
+                <p class="text-muted">Intenta cambiar los filtros de búsqueda.</p>
+                <a href="/catalogo" class="btn btn-outline-dark rounded-pill fw-bold px-4 mt-2">Ver todos los proyectos</a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .chatbot-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: 'Inter', sans-serif; }
+        .chatbot-toggle-btn { width: 60px; height: 60px; background-color: var(--color-principal, #FB6222); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(251, 98, 34, 0.4); transition: all 0.3s ease; border: none; float: right; }
+        .chatbot-toggle-btn:hover { background-color: var(--color-hover, #FFC107); color: #111827; transform: scale(1.05); }
+        .chatbot-window { width: 350px; height: 450px; background-color: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); display: none; flex-direction: column; overflow: hidden; margin-bottom: 15px; border: 1px solid #f1f5f9; }
+        .chatbot-header { background-color: #111827; color: white; padding: 15px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .chatbot-messages { flex: 1; padding: 15px; overflow-y: auto; background-color: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
+        .chat-bubble { max-width: 80%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; }
+        .bot-bubble { background-color: white; color: #111827; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); }
+        .user-bubble { background-color: var(--color-principal, #FB6222); color: white; align-self: flex-end; border-bottom-right-radius: 2px; box-shadow: 0 2px 5px rgba(251, 98, 34, 0.2); }
+        .chatbot-input-area { padding: 10px 15px; background-color: white; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; }
+        .chatbot-input-area input { flex: 1; border: 1px solid #e2e8f0; border-radius: 20px; padding: 8px 15px; outline: none; font-size: 0.9rem; }
+        .chatbot-input-area input:focus { border-color: var(--color-principal, #FB6222); }
+        .chatbot-input-area button { background-color: var(--color-principal, #FB6222); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; transition: 0.2s; }
+        .chatbot-input-area button:hover { background-color: var(--color-hover, #FFC107); color: #111827; }
+        .bot-action-btn { display: inline-block; margin-top: 8px; background-color: #111827; color: white !important; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; }
+        .bot-action-btn:hover { background-color: var(--color-hover, #FFC107); color: #111827 !important; }
+    </style>
+    <div class="chatbot-wrapper">
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <span><i class="bi bi-robot me-2"></i> Asistente LocoBrick</span>
+                <i class="bi bi-x-lg" style="cursor: pointer;" onclick="toggleChat()"></i>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-bubble bot-bubble">¡Hola! 👋 Qué alegría verte por aquí. Soy el asistente virtual de
+                    LocoBrick. ¿En qué puedo ayudarte con tus inversiones hoy?</div>
+            </div>
+            <div class="chatbot-input-area">
+                <input type="text" id="chatInput" placeholder="Escribe tu duda..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()"><i class="bi bi-send-fill"></i></button>
+            </div>
+        </div>
+        <button class="chatbot-toggle-btn" id="chatToggleBtn" onclick="toggleChat()"><i
+                class="bi bi-chat-dots-fill"></i></button>
+    </div>
+    <script>
+        const knowledgeBase = [
+            { keywords: ["como funciona", "que es esto", "explicacion", "de que va", "como invierto"], response: "LocoBrick te permite invertir en inmuebles de forma fraccionada. Nosotros seleccionamos y gestionamos las propiedades, y tú compras una pequeña parte. Así, recibes rentas mensuales proporcionales y ganas dinero con la revalorización del activo.", buttonText: "Ver cómo funciona", buttonLink: "/#como-funciona" },
+            { keywords: ["comprar", "invertir", "adquirir", "participar", "catalogo", "casas", "propiedades", "inmuebles"], response: "Para comprar participaciones, primero debes registrarte y depositar fondos. Luego, entra en nuestro catálogo, elige la propiedad que te guste y selecciona cuánto quieres invertir.", buttonText: "Ir al Catálogo", buttonLink: "/catalogo" },
+            { keywords: ["vender", "liquidar", "desinvertir", "recuperar", "venta"], response: "Puedes vender tus participaciones en cualquier momento desde tu panel de 'Mis Inversiones'. Solo tienes que hacer clic en el botón 'Vender' del activo correspondiente y el dinero volverá a tu saldo disponible al instante.", buttonText: "Ir a Mis Inversiones", buttonLink: "/mis-inversiones" },
+            { keywords: ["minimo", "cuanto dinero", "inversion minima", "cantidad minima", "desde cuanto"], response: "¡Democratizamos la inversión! En LocoBrick puedes empezar a crear tu cartera inmobiliaria aportando desde tan solo 100€ por proyecto.", buttonText: "Ver Proyectos", buttonLink: "/catalogo" },
+            { keywords: ["saldo", "depositar", "ingresar", "retirar", "sacar dinero", "transferencia", "fondos", "wallet"], response: "Para gestionar tu dinero (ingresar o retirar fondos a tu cuenta bancaria), ve a la sección de tu Cartera. Usa los botones de 'Depositar' o 'Retirar'. Las transferencias de retiro suelen tardar entre 1 y 2 días hábiles.", buttonText: "Gestionar Fondos", buttonLink: "/mis-inversiones" },
+            { keywords: ["rentas", "beneficios", "ganancias", "cuando cobro", "dividendos", "rentabilidad"], response: "Las rentas generadas por los alquileres de tus propiedades se reparten de forma mensual. Verás los ingresos sumados automáticamente al saldo disponible de tu Cartera.", buttonText: "Ver mi Cartera", buttonLink: "/mis-inversiones" }
+        ];
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatbotWindow');
+            const icon = document.querySelector('#chatToggleBtn i');
+            if (chatWindow.style.display === 'flex') {
+                chatWindow.style.display = 'none';
+                icon.className = 'bi bi-chat-dots-fill';
+            } else {
+                chatWindow.style.display = 'flex';
+                icon.className = 'bi bi-x-lg';
+                document.getElementById('chatInput').focus();
+            }
+        }
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+        function sendMessage() {
+            const inputField = document.getElementById('chatInput');
+            const userText = inputField.value.trim();
+            if (!userText) return;
+            addMessage(userText, 'user');
+            inputField.value = '';
+            setTimeout(() => {
+                const reply = findAnswer(userText);
+                addMessage(reply.text, 'bot', reply.actionBtn);
+            }, 500);
+        }
+        function findAnswer(text) {
+            const cleanText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            if (cleanText.match(/^(hola|buenas|que tal|saludos|hey|buenos dias|buenas tardes)/)) return { text: "¡Hola! 👋 Qué alegría verte por aquí. Soy el asistente virtual de LocoBrick. ¿En qué puedo ayudarte con tus inversiones hoy?", actionBtn: "" };
+            if (cleanText.match(/(adios|hasta luego|chao|nos vemos)/)) return { text: "¡Hasta pronto! 👋 Recuerda que el mercado inmobiliario nunca duerme. ¡Vuelve cuando quieras!", actionBtn: "" };
+            if (cleanText.match(/(quien eres|como te llamas|eres un robot|eres ia|que eres)/)) return { text: "Soy LocoBot 🤖, el asistente virtual de LocoBrick. Estoy aquí para guiarte por la plataforma, ayudarte a invertir y resolver tus dudas básicas. ¡No pido sueldo, solo que me uses!", actionBtn: "" };
+            if (cleanText.includes("animal con menos pelo") || cleanText.includes("animal que tiene menos pelo")) return { text: "Esa es fácil... ¡Aitor de la Cueva! 👨‍🦲😂", actionBtn: "" };
+            for (let item of knowledgeBase) {
+                for (let keyword of item.keywords) {
+                    if (cleanText.includes(keyword)) return { text: item.response, actionBtn: item.buttonLink ? `<br><a href="${item.buttonLink}" class="bot-action-btn">${item.buttonText}</a>` : "" };
+                }
+            }
+            return { text: "Mmm, no estoy seguro de entender eso. 🤔<br>Soy un bot de navegación, así que se me da genial ayudarte con cosas como:<br>👉 <i>'Quiero comprar'</i><br>👉 <i>'Ver mi cartera'</i><br>👉 <i>'Depositar dinero'</i>", actionBtn: "" };
+        }
+        function addMessage(text, sender, extraHTML = "") {
+            const chatBox = document.getElementById('chatbotMessages');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${sender}-bubble`;
+            bubble.innerHTML = text + extraHTML;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

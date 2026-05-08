@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Retirar Fondos - LocoBrick</title>
+    <link rel="icon" type="image/png" th:href="@{/images/Ladrillo.png}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-blanco: #FFFFFF;
+            --color-negro: #212529;
+            --color-gris: #6c757d;
+            --color-locobrick: #FB6222;
+            --color-hover: #e0a800;
+            --fuente-titulos: 'Poppins', sans-serif;
+            --fuente-textos: 'Open Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-textos);
+            background-color: #F4F5F7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .contenedor {
+            background-color: var(--color-blanco);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-family: var(--fuente-titulos);
+            font-size: 24px;
+            color: var(--color-negro);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--color-gris);
+            margin-bottom: 25px;
+        }
+
+        .caja-saldo {
+            background-color: rgba(251, 98, 34, 0.05);
+            border: 1px solid rgba(251, 98, 34, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .caja-saldo span:first-child {
+            font-size: 13px;
+            color: var(--color-gris);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .caja-saldo span:last-child {
+            font-family: var(--fuente-titulos);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-locobrick);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .grupo-input {
+            position: relative;
+            width: 100%;
+            text-align: left;
+        }
+
+        .input-flotante {
+            width: 100%;
+            padding: 15px 15px 5px 15px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            background-color: transparent;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: var(--fuente-textos);
+            color: var(--color-negro);
+            font-weight: 600;
+        }
+
+        .input-flotante:focus,
+        .input-flotante:not(:placeholder-shown) {
+            border-color: var(--color-locobrick);
+            box-shadow: 0 0 0 3px rgba(251, 98, 34, 0.1);
+        }
+
+        .label-flotante {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 15px;
+            color: var(--color-gris);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background-color: var(--color-blanco);
+            padding: 0 5px;
+        }
+
+        .input-flotante:focus~.label-flotante,
+        .input-flotante:not(:placeholder-shown)~.label-flotante {
+            top: 0;
+            font-size: 12px;
+            color: var(--color-locobrick);
+            font-weight: 600;
+        }
+
+        .input-cantidad {
+            padding-right: 35px;
+            /* Restaurado a 35px porque el botón ya no está dentro */
+            font-size: 22px;
+            font-family: var(--fuente-titulos);
+            color: var(--color-locobrick) !important;
+            text-align: right;
+        }
+
+        .simbolo-euro {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--color-locobrick);
+        }
+
+        /* NUEVO ESTILO PARA EL BOTÓN MÁXIMO (Fila independiente) */
+        .btn-maximo {
+            width: 100%;
+            background: rgba(251, 98, 34, 0.08);
+            border: 1px solid rgba(251, 98, 34, 0.3);
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--color-locobrick);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: -10px;
+            /* Para acercarlo al input superior */
+        }
+
+        .btn-maximo:hover {
+            background: var(--color-locobrick);
+            color: var(--color-blanco);
+            border-color: var(--color-locobrick);
+            box-shadow: 0 2px 8px rgba(251, 98, 34, 0.3);
+        }
+
+        .titulo-seccion {
+            text-align: left;
+            font-size: 13px;
+            color: var(--color-gris);
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: -10px;
+        }
+
+        .opcion-destino {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opcion-destino:hover {
+            background-color: #f8f9fa;
+            border-color: var(--color-locobrick);
+        }
+
+        .opcion-destino input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+            accent-color: var(--color-locobrick);
+        }
+
+        .opcion-destino .icono-tarjeta {
+            font-size: 24px;
+            margin-right: 15px;
+            color: var(--color-negro);
+        }
+
+        .opcion-destino .info-tarjeta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .opcion-destino .info-tarjeta span:first-child {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--color-negro);
+        }
+
+        .opcion-destino .info-tarjeta span:last-child {
+            font-size: 12px;
+            color: var(--color-gris);
+        }
+
+        #formularioNuevaTarjeta {
+            display: none;
+            animation: fadeIn 0.4s;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #ced4da;
+        }
+
+        .btn-enviar {
+            background-color: var(--color-locobrick);
+            color: var(--color-blanco);
+            font-family: var(--fuente-titulos);
+            font-weight: 600;
+            font-size: 16px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(251, 98, 34, 0.3);
+        }
+
+        .btn-enviar:hover {
+            background-color: var(--color-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(224, 168, 0, 0.4);
+        }
+
+        .separador {
+            margin: 25px 0;
+            border-top: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .enlaces {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .enlaces a {
+            color: var(--color-locobrick);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .enlaces a:hover {
+            color: var(--color-hover);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor">
+        <div class="header">
+            <h1>Retirar Fondos</h1>
+            <p>Transfiere tu saldo a tu cuenta bancaria.</p>
+        </div>
+
+        <div class="caja-saldo">
+            <span>Saldo Disponible</span>
+            <input type="hidden" id="maximoCentimos" th:value="${usuario.saldo}">
+            <span th:text="${#numbers.formatDecimal(saldoEuros, 0, 'POINT', 2, 'COMMA') + ' €'}">0,00 €</span>
+        </div>
+
+        <form action="/wallet/operar" method="post" id="formRetiro">
+            <input type="hidden" name="tipo" value="retirar">
+            <input type="hidden" id="cantidadCentimos" name="cantidadCentimos" value="0">
+
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div class="grupo-input">
+                    <input type="text" id="cantidad" class="input-flotante input-cantidad" placeholder=" " required
+                        oninput="formatFintech(this, 'cantidadCentimos')">
+                    <label for="cantidad" class="label-flotante">¿Cuánto deseas retirar?</label>
+                    <span class="simbolo-euro">€</span>
+                </div>
+
+                <button type="button" class="btn-maximo" onclick="retirarTodo()">Retirar todo el saldo</button>
+            </div>
+
+            <p class="titulo-seccion mt-2">Destino del dinero</p>
+
+            <label class="opcion-destino" th:if="${usuario.ultimosDigitosTarjeta != null}">
+                <input type="radio" name="destino" value="guardada" checked onchange="toggleNuevaTarjeta()">
+                <i class="bi bi-credit-card-fill icono-tarjeta"></i>
+                <div class="info-tarjeta">
+                    <span th:text="'Tarjeta terminada en ' + ${usuario.ultimosDigitosTarjeta}">Tarjeta guardada</span>
+                    <span>Retiro instantáneo</span>
+                </div>
+            </label>
+
+            <label class="opcion-destino">
+                <input type="radio" name="destino" value="nueva" th:checked="${usuario.ultimosDigitosTarjeta == null}"
+                    onchange="toggleNuevaTarjeta()">
+                <i class="bi bi-bank2 icono-tarjeta"></i>
+                <div class="info-tarjeta">
+                    <span>Otra cuenta / Nueva Tarjeta</span>
+                    <span>1 - 2 días hábiles</span>
+                </div>
+            </label>
+
+            <div id="formularioNuevaTarjeta"
+                th:style="${usuario.ultimosDigitosTarjeta == null ? 'display:block;' : 'display:none;'}">
+                <div class="grupo-input" style="margin-bottom: 15px;">
+                    <input type="text" id="titularInput" name="titular" class="input-flotante" placeholder=" ">
+                    <label for="titularInput" class="label-flotante">Nombre del titular</label>
+                </div>
+                <div class="grupo-input" style="margin-bottom: 10px;">
+                    <input type="text" id="numeroInput" name="numeroTarjeta" class="input-flotante" placeholder=" "
+                        maxlength="19">
+                    <label for="numeroInput" class="label-flotante">Número de tarjeta</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-enviar">CONFIRMAR RETIRO</button>
+        </form>
+
+        <div class="separador"></div>
+        <div class="enlaces"><a href="/mis-inversiones">← Cancelar y volver</a></div>
+    </div>
+
+    <script>
+        // Función para retirar todo el saldo
+        function retirarTodo() {
+            const maxCentimos = document.getElementById('maximoCentimos').value;
+            const inputVisible = document.getElementById('cantidad');
+
+            // Seteamos el valor en el input oculto de céntimos
+            document.getElementById('cantidadCentimos').value = maxCentimos;
+
+            // Formateamos visualmente para el usuario (ej: 123456 -> 1.234,56)
+            let valInt = parseInt(maxCentimos, 10);
+            let formatted = (valInt / 100).toFixed(2).replace('.', ',');
+            inputVisible.value = formatted;
+        }
+
+        // FORMATEADOR TIPO CAJERO
+        function formatFintech(visibleInput, hiddenId) {
+            let valStr = visibleInput.value.replace(/\D/g, '');
+            if (valStr === '') valStr = '0';
+            let valInt = parseInt(valStr, 10);
+
+            document.getElementById(hiddenId).value = valInt;
+            let formatted = (valInt / 100).toFixed(2).replace('.', ',');
+            visibleInput.value = formatted;
+        }
+
+        function toggleNuevaTarjeta() {
+            const radioNueva = document.querySelector('input[value="nueva"]');
+            const divFormulario = document.getElementById('formularioNuevaTarjeta');
+            const titularInput = document.getElementById('titularInput');
+            const numeroInput = document.getElementById('numeroInput');
+
+            if (radioNueva && radioNueva.checked) {
+                divFormulario.style.display = 'block';
+                titularInput.required = true;
+                numeroInput.required = true;
+            } else {
+                divFormulario.style.display = 'none';
+                titularInput.required = false;
+                numeroInput.required = false;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            toggleNuevaTarjeta();
+
+            // Validar que no retire más de lo que tiene
+            document.getElementById('formRetiro').addEventListener('submit', function (e) {
+                const maximoCentimos = parseInt(document.getElementById('maximoCentimos').value, 10);
+                const aRetirarCentimos = parseInt(document.getElementById('cantidadCentimos').value, 10);
+
+                if (aRetirarCentimos <= 0) {
+                    e.preventDefault();
+                    alert('Introduce una cantidad válida mayor a 0.');
+                } else if (aRetirarCentimos > maximoCentimos) {
+                    e.preventDefault();
+                    alert('No puedes retirar más saldo del que tienes disponible.');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
